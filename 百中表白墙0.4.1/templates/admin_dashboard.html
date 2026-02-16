@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理员后台 - 百中表白墙</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
+            min-height: 100vh;
+        }
+        
+        /* 导航栏样式 */
+        .navbar {
+            background: linear-gradient(90deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(255, 154, 158, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .navbar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 2rem;
+        }
+        
+        .nav-links a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: #ff6b6b;
+        }
+        
+        /* 主内容区 */
+        .container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        /* 页面标题 */
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        /* 搜索框 */
+        .search-container {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .search-form {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 0.8rem 1.2rem;
+            border: 2px solid #f5f5f5;
+            border-radius: 25px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #ff9a9e;
+            box-shadow: 0 0 0 3px rgba(255, 154, 158, 0.1);
+        }
+        
+        /* 按钮样式 */
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, #ff9a9e 0%, #fecfef 100%);
+            color: #333;
+            box-shadow: 0 4px 10px rgba(255, 154, 158, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 154, 158, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-danger {
+            background: #ff6b6b;
+            color: white;
+            box-shadow: 0 4px 10px rgba(255, 107, 107, 0.3);
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 107, 107, 0.4);
+        }
+        
+        /* 表白卡片 */
+        .confession-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .confession-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .confession-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .confession-id {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #999;
+        }
+        
+        .confession-status {
+            font-size: 0.8rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+        
+        .status-banned {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .status-pending {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+        
+        .original-content {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #f5f5f5;
+            border-radius: 8px;
+            border-left: 4px solid #ff9a9e;
+        }
+        
+        .original-content h4 {
+            margin-bottom: 0.5rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .original-content p {
+            margin: 0;
+            color: #333;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .filter-container {
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            border: 1px solid #f5f5f5;
+            background: white;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+        
+        .filter-btn:hover {
+            border-color: #ff9a9e;
+            background: rgba(255, 154, 158, 0.1);
+        }
+        
+        .filter-btn.active {
+            background: linear-gradient(90deg, #ff9a9e 0%, #fecfef 100%);
+            color: #333;
+            border-color: #ff9a9e;
+        }
+        
+        .confession-content {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        
+        .confession-meta {
+            font-size: 0.9rem;
+            color: #999;
+            text-align: right;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* 操作按钮组 */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+        
+        .action-btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 1rem;
+            color: #999;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .empty-state h3 {
+            margin-bottom: 1rem;
+            color: #666;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+            
+            .navbar-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .nav-links li {
+                margin: 0 1rem;
+            }
+            
+            .container {
+                margin: 1rem auto;
+            }
+            
+            .search-form {
+                flex-direction: column;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .action-btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/" class="logo">百中表白墙</a>
+            <ul class="nav-links">
+                <li><a href="/confess">表白</a></li>
+                <li class="font-selector">
+                    <button class="font-btn">字体</button>
+                    <div class="font-dropdown">
+                        <form method="POST" action="/admin/change-font">
+                            <input type="hidden" name="font" value="default">
+                            <button type="submit">默认字体</button>
+                        </form>
+                        <form method="POST" action="/admin/change-font">
+                            <input type="hidden" name="font" value="kaiti">
+                            <button type="submit">楷体</button>
+                        </form>
+                        <form method="POST" action="/admin/change-font">
+                            <input type="hidden" name="font" value="xkaiti">
+                            <button type="submit">行楷</button>
+                        </form>
+                        <form method="POST" action="/admin/change-font">
+                            <input type="hidden" name="font" value="stxingkai">
+                            <button type="submit">行书</button>
+                        </form>
+                    </div>
+                </li>
+                <li><a href="/admin">管理员后台</a></li>
+                <li><a href="/admin/change-password">修改密码</a></li>
+                <li><a href="/admin/logout">登出</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <style>
+        /* 字体选择器样式 */
+        .font-selector {
+            position: relative;
+        }
+        
+        .font-btn {
+            background: transparent;
+            border: none;
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 0;
+            transition: color 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .font-btn:hover {
+            color: #ff6b6b;
+        }
+        
+        .font-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 0.5rem 0;
+            margin-top: 0.5rem;
+            min-width: 120px;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+        
+        .font-selector:hover .font-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .font-dropdown form {
+            margin: 0;
+        }
+        
+        .font-dropdown button {
+            display: block;
+            width: 100%;
+            padding: 0.8rem 1.5rem;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+        }
+        
+        .font-dropdown button:hover {
+            background: rgba(255, 154, 158, 0.1);
+            padding-left: 2rem;
+        }
+        
+        /* 字体样式定义 */
+        body.font-kaiti {
+            font-family: 'KaiTi', '楷体', serif;
+        }
+        
+        body.font-xkaiti {
+            font-family: 'STKaiti', '华文楷体', serif;
+        }
+        
+        body.font-stxingkai {
+            font-family: 'STXingkai', '华文行楷', cursive;
+        }
+    </style>
+    
+    <script>
+        // 应用服务器传递的字体
+        document.addEventListener('DOMContentLoaded', function() {
+            // 从模板变量获取字体配置
+            const currentFont = '{{ current_font }}';
+            if (currentFont && currentFont !== 'default') {
+                document.body.className = 'font-' + currentFont;
+            }
+        });
+        
+        // 显示封禁IP模态框
+        function showBanIPModal(ipAddress) {
+            // 创建模态框元素
+            const modal = document.createElement('div');
+            modal.className = 'ban-ip-modal';
+            modal.innerHTML = `
+                <div class="ban-ip-modal-content">
+                    <div class="ban-ip-modal-header">
+                        <h3>封禁IP</h3>
+                    </div>
+                    <div class="ban-ip-modal-body">
+                        <p>IP地址：<strong>${ipAddress}</strong></p>
+                        <div style="margin-top: 1.5rem;">
+                            <label for="ban-duration" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">封禁时长：</label>
+                            <select id="ban-duration" class="ban-duration-select">
+                                <option value="1800">30分钟</option>
+                                <option value="3600">60分钟</option>
+                                <option value="10800">3小时</option>
+                                <option value="21600">6小时</option>
+                                <option value="43200">12小时</option>
+                                <option value="86400">24小时</option>
+                                <option value="604800">7天</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="ban-ip-modal-footer">
+                        <button class="btn btn-secondary" onclick="this.closest('.ban-ip-modal').remove()">取消</button>
+                        <button class="btn btn-primary" onclick="banIP('${ipAddress}', this.closest('.ban-ip-modal'))">确定封禁</button>
+                    </div>
+                </div>
+            `;
+            
+            // 添加到页面
+            document.body.appendChild(modal);
+            
+            // 添加模态框样式
+            addBanIPModalStyles();
+        }
+        
+        // 添加封禁IP模态框样式
+        function addBanIPModalStyles() {
+            // 检查是否已添加样式
+            if (!document.getElementById('ban-ip-modal-styles')) {
+                const style = document.createElement('style');
+                style.id = 'ban-ip-modal-styles';
+                style.textContent = `
+                    /* 封禁IP模态框样式 */
+                    .ban-ip-modal {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: rgba(0, 0, 0, 0.5);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        z-index: 10000;
+                    }
+                    
+                    .ban-ip-modal-content {
+                        background: white;
+                        border-radius: 16px;
+                        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+                        max-width: 400px;
+                        width: 90%;
+                        overflow: hidden;
+                        animation: modalFadeIn 0.3s ease;
+                    }
+                    
+                    @keyframes modalFadeIn {
+                        from {
+                            opacity: 0;
+                            transform: translateY(-20px) scale(0.95);
+                        }
+                        to {
+                            opacity: 1;
+                            transform: translateY(0) scale(1);
+                        }
+                    }
+                    
+                    .ban-ip-modal-header {
+                        background: linear-gradient(90deg, #ff9a9e 0%, #fecfef 100%);
+                        padding: 1.5rem;
+                        text-align: center;
+                    }
+                    
+                    .ban-ip-modal-header h3 {
+                        margin: 0;
+                        color: #333;
+                        font-size: 1.2rem;
+                        font-weight: bold;
+                    }
+                    
+                    .ban-ip-modal-body {
+                        padding: 2rem;
+                    }
+                    
+                    .ban-ip-modal-body p {
+                        margin: 0;
+                        color: #333;
+                        font-size: 1rem;
+                        line-height: 1.5;
+                    }
+                    
+                    .ban-duration-select {
+                        width: 100%;
+                        padding: 0.8rem 1.2rem;
+                        border: 2px solid #f5f5f5;
+                        border-radius: 25px;
+                        font-size: 1rem;
+                        transition: all 0.3s ease;
+                        background: white;
+                        color: #333;
+                        appearance: none;
+                        -webkit-appearance: none;
+                        -moz-appearance: none;
+                        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ff9a9e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+                        background-repeat: no-repeat;
+                        background-position: right 1rem center;
+                        background-size: 16px;
+                    }
+                    
+                    .ban-duration-select:focus {
+                        outline: none;
+                        border-color: #ff9a9e;
+                        box-shadow: 0 0 0 3px rgba(255, 154, 158, 0.1);
+                    }
+                    
+                    .ban-duration-select option {
+                        padding: 0.8rem 1.2rem;
+                        background: white;
+                        color: #333;
+                        border-radius: 8px;
+                    }
+                    
+                    .ban-duration-select option:hover {
+                        background: rgba(255, 154, 158, 0.1);
+                    }
+                    
+                    .ban-duration-select option:checked {
+                        background: linear-gradient(90deg, #ff9a9e 0%, #fecfef 100%) !important;
+                        color: #333 !important;
+                    }
+                    
+                    /* 自定义下拉菜单样式 */
+                    .ban-duration-select::-webkit-scrollbar {
+                        width: 8px;
+                    }
+                    
+                    .ban-duration-select::-webkit-scrollbar-track {
+                        background: #f5f5f5;
+                        border-radius: 10px;
+                    }
+                    
+                    .ban-duration-select::-webkit-scrollbar-thumb {
+                        background: linear-gradient(180deg, #ff9a9e 0%, #fecfef 100%);
+                        border-radius: 10px;
+                    }
+                    
+                    .ban-duration-select::-webkit-scrollbar-thumb:hover {
+                        background: linear-gradient(180deg, #ff8a8e 0%, #febfef 100%);
+                    }
+                    
+                    .ban-ip-modal-footer {
+                        padding: 0 2rem 2rem;
+                        display: flex;
+                        gap: 1rem;
+                        justify-content: flex-end;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+        
+        // 封禁IP
+        function banIP(ipAddress, modal) {
+            const durationSelect = document.getElementById('ban-duration');
+            const duration = durationSelect.value;
+            
+            // 创建表单并提交
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/admin/ban-ip';
+            
+            const ipInput = document.createElement('input');
+            ipInput.type = 'hidden';
+            ipInput.name = 'ip';
+            ipInput.value = ipAddress;
+            form.appendChild(ipInput);
+            
+            const durationInput = document.createElement('input');
+            durationInput.type = 'hidden';
+            durationInput.name = 'duration';
+            durationInput.value = duration;
+            form.appendChild(durationInput);
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+        
+        // 显示用户内容模态框
+        function showUserContentModal(ipAddress) {
+            // 获取用户档案数据
+            const userProfiles = {{ user_profiles|tojson }};
+            const userProfile = userProfiles[ipAddress] || { violations: [], banned_content: [] };
+            
+            // 创建模态框元素
+            const modal = document.createElement('div');
+            modal.className = 'user-content-modal';
+            
+            // 构建违规内容HTML
+            let bannedContentHtml = '';
+            if (userProfile.banned_content && userProfile.banned_content.length > 0) {
+                bannedContentHtml = userProfile.banned_content.map((content, index) => {
+                    const timestamp = new Date(content.created_at * 1000).toLocaleString();
+                    return `
+                        <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #f5f5f5;">
+                            <div style="font-size: 0.9rem; color: #666; margin-bottom: 0.5rem;">
+                                内容 ${index + 1} - ${timestamp}
+                            </div>
+                            <div style="padding: 1rem; background: #f9f9f9; border-radius: 8px; white-space: pre-wrap; word-break: break-all;">
+                                ${content.content}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                bannedContentHtml = '<p style="color: #999; text-align: center; padding: 2rem;">暂无被封禁时发布的内容</p>';
+            }
+            
+            modal.innerHTML = `
+                <div class="user-content-modal-content">
+                    <div class="user-content-modal-header">
+                        <h3>用户内容管理 - ${ipAddress}</h3>
+                    </div>
+                    <div class="user-content-modal-body">
+                        <h4 style="margin-bottom: 1rem; color: #333;">被封禁时发布的内容</h4>
+                        ${bannedContentHtml}
+                    </div>
+                    <div class="user-content-modal-footer">
+                        <button class="btn btn-primary" onclick="this.closest('.user-content-modal').remove()">关闭</button>
+                    </div>
+                </div>
+            `;
+            
+            // 添加到页面
+            document.body.appendChild(modal);
+            
+            // 添加模态框样式
+            addUserContentModalStyles();
+        }
+        
+        // 添加用户内容模态框样式
+        function addUserContentModalStyles() {
+            // 检查是否已添加样式
+            if (!document.getElementById('user-content-modal-styles')) {
+                const style = document.createElement('style');
+                style.id = 'user-content-modal-styles';
+                style.textContent = `
+                    /* 用户内容模态框样式 */
+                    .user-content-modal {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: rgba(0, 0, 0, 0.5);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        z-index: 10000;
+                    }
+                    
+                    .user-content-modal-content {
+                        background: white;
+                        border-radius: 16px;
+                        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+                        max-width: 800px;
+                        width: 90%;
+                        max-height: 80vh;
+                        overflow: hidden;
+                        animation: modalFadeIn 0.3s ease;
+                    }
+                    
+                    @keyframes modalFadeIn {
+                        from {
+                            opacity: 0;
+                            transform: translateY(-20px) scale(0.95);
+                        }
+                        to {
+                            opacity: 1;
+                            transform: translateY(0) scale(1);
+                        }
+                    }
+                    
+                    .user-content-modal-header {
+                        background: linear-gradient(90deg, #ff9a9e 0%, #fecfef 100%);
+                        padding: 1.5rem;
+                        text-align: center;
+                    }
+                    
+                    .user-content-modal-header h3 {
+                        margin: 0;
+                        color: #333;
+                        font-size: 1.2rem;
+                        font-weight: bold;
+                    }
+                    
+                    .user-content-modal-body {
+                        padding: 2rem;
+                        overflow-y: auto;
+                        max-height: 60vh;
+                    }
+                    
+                    .user-content-modal-body h4 {
+                        margin-top: 0;
+                    }
+                    
+                    .user-content-modal-footer {
+                        padding: 0 2rem 2rem;
+                        display: flex;
+                        gap: 1rem;
+                        justify-content: flex-end;
+                    }
+                    
+                    /* 自定义滚动条样式 */
+                    .user-content-modal-body::-webkit-scrollbar {
+                        width: 8px;
+                    }
+                    
+                    .user-content-modal-body::-webkit-scrollbar-track {
+                        background: #f5f5f5;
+                        border-radius: 10px;
+                    }
+                    
+                    .user-content-modal-body::-webkit-scrollbar-thumb {
+                        background: linear-gradient(180deg, #ff9a9e 0%, #fecfef 100%);
+                        border-radius: 10px;
+                    }
+                    
+                    .user-content-modal-body::-webkit-scrollbar-thumb:hover {
+                        background: linear-gradient(180deg, #ff8a8e 0%, #febfef 100%);
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+    </script>
+    
+    <!-- 主内容区 -->
+    <div class="container">
+        <h1 class="page-title">管理员后台</h1>
+        
+        <!-- 搜索框 -->
+        <div class="search-container">
+            <form class="search-form" method="GET" action="/admin">
+                <input type="text" name="search" class="search-input" placeholder="搜索表白内容..." value="{{ search_query }}">
+                <button type="submit" class="btn btn-primary">搜索</button>
+            </form>
+        </div>
+        
+        <!-- 状态过滤 -->
+        <div class="filter-container">
+            <a href="/admin" class="filter-btn {% if not status_filter %}active{% endif %}">全部</a>
+            <a href="/admin?status=active" class="filter-btn {% if status_filter == 'active' %}active{% endif %}">正常</a>
+            <a href="/admin?status=pending" class="filter-btn {% if status_filter == 'pending' %}active{% endif %}">待审核</a>
+            <a href="/admin?status=banned" class="filter-btn {% if status_filter == 'banned' %}active{% endif %}">已封禁</a>
+        </div>
+        
+        <!-- 副管理员管理区域（仅主管理员可见） -->
+        {% if admin_role == 'main' %}
+            <div class="search-container" style="margin-bottom: 2rem;">
+                <h3 style="margin-bottom: 1rem;">副管理员管理</h3>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background-color: #f5f5f5;">
+                                <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #eee;">用户名</th>
+                                <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #eee;">角色</th>
+                                <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #eee;">状态</th>
+                                <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #eee;">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for admin in admins %}
+                                {% if admin.role == 'sub' %}
+                                    <tr>
+                                        <td style="padding: 1rem; border-bottom: 1px solid #eee;">{{ admin.username }}</td>
+                                        <td style="padding: 1rem; border-bottom: 1px solid #eee;">{{ '副管理员' if admin.role == 'sub' else '主管理员' }}</td>
+                                        <td style="padding: 1rem; border-bottom: 1px solid #eee;">
+                                            <span class="confession-status {% if admin.status == 'active' %}status-active{% else %}status-banned{% endif %}">
+                                                {% if admin.status == 'active' %}正常{% else %}已封禁{% endif %}
+                                            </span>
+                                        </td>
+                                        <td style="padding: 1rem; border-bottom: 1px solid #eee;">
+                                            <form method="POST" action="/admin/manage-admin/{{ admin.username }}" style="display: inline;">
+                                                <input type="hidden" name="action" value="{% if admin.status == 'active' %}ban{% else %}unban{% endif %}">
+                                                <button type="submit" class="action-btn {% if admin.status == 'active' %}btn-danger{% else %}btn-secondary{% endif %}">
+                                                    {% if admin.status == 'active' %}封禁{% else %}解封{% endif %}
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+        
+        <!-- 用户IP管理区域 -->
+        <div class="search-container" style="margin-bottom: 2rem;">
+            <h3 style="margin-bottom: 1rem;">用户IP管理</h3>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background-color: #f5f5f5;">
+                            <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #eee;">IP地址</th>
+                            <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #eee;">状态</th>
+                            <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #eee;">封禁到期时间</th>
+                            <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #eee;">申诉数量</th>
+                            <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #eee;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ip, ban_info in ip_offenses.items() %}
+                            {% if ban_info.banned_until > current_time %}
+                                <tr>
+                                    <td style="padding: 1rem; border-bottom: 1px solid #eee;">{{ ip.replace('_ban', '') }}</td>
+                                    <td style="padding: 1rem; border-bottom: 1px solid #eee;">
+                                        <span class="confession-status status-banned">已封禁</span>
+                                    </td>
+                                    <td style="padding: 1rem; border-bottom: 1px solid #eee;">{{ ban_info.banned_until|datetimeformat }}</td>
+                                    <td style="padding: 1rem; border-bottom: 1px solid #eee;">{{ ip_appeals.get(ip.replace('_ban', ''), []).__len__() }}</td>
+                                    <td style="padding: 1rem; border-bottom: 1px solid #eee;">
+                                        <button class="action-btn btn-secondary" onclick="showUserContentModal('{{ ip.replace('_ban', '') }}')">
+                                            查看内容
+                                        </button>
+                                        <form method="POST" action="/admin/unban-ip" style="display: inline;">
+                                            <input type="hidden" name="ip" value="{{ ip.replace('_ban', '') }}">
+                                            <button type="submit" class="action-btn btn-secondary">解封</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- IP申诉管理区域 -->
+        <div class="search-container" style="margin-bottom: 2rem;">
+            <h3 style="margin-bottom: 1rem;">IP申诉管理</h3>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background-color: #f5f5f5;">
+                            <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #eee;">IP地址</th>
+                            <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #eee;">申诉内容</th>
+                            <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #eee;">提交时间</th>
+                            <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #eee;">状态</th>
+                            <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #eee;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ip, appeals in ip_appeals.items() %}
+                            {% for appeal in appeals %}
+                                {% if appeal.status == 'pending' %}
+                                    <tr>
+                                        <td style="padding: 1rem; border-bottom: 1px solid #eee;">{{ ip }}</td>
+                                        <td style="padding: 1rem; border-bottom: 1px solid #eee;">{{ appeal.content }}</td>
+                                        <td style="padding: 1rem; border-bottom: 1px solid #eee;">{{ appeal.created_at|datetimeformat }}</td>
+                                        <td style="padding: 1rem; border-bottom: 1px solid #eee;">
+                                            <span class="confession-status status-pending">待处理</span>
+                                        </td>
+                                        <td style="padding: 1rem; border-bottom: 1px solid #eee;">
+                                            <form method="POST" action="/admin/handle-appeal" style="display: inline;">
+                                                <input type="hidden" name="ip" value="{{ ip }}">
+                                                <input type="hidden" name="appeal_index" value="{{ loop.index0 }}">
+                                                <input type="hidden" name="action" value="approve">
+                                                <button type="submit" class="action-btn btn-primary">通过</button>
+                                            </form>
+                                            <form method="POST" action="/admin/handle-appeal" style="display: inline;">
+                                                <input type="hidden" name="ip" value="{{ ip }}">
+                                                <input type="hidden" name="appeal_index" value="{{ loop.index0 }}">
+                                                <input type="hidden" name="action" value="reject">
+                                                <button type="submit" class="action-btn btn-danger">拒绝</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- 表白列表 -->
+        {% if confessions %}
+            {% for confession in confessions %}
+                <div class="confession-card">
+                    <div class="confession-header">
+                        <span class="confession-id">#{{ confession.id }}</span>
+                        <span class="confession-status 
+                            {% if confession.status == 'active' %}status-active{% elif confession.status == 'banned' %}status-banned{% else %}status-pending{% endif %}">
+                            {% if confession.status == 'active' %}正常{% elif confession.status == 'banned' %}已封禁{% else %}待审核{% endif %}
+                        </span>
+                    </div>
+                    <div class="confession-content">{{ confession.content }}</div>
+                    {% if confession.original_content %}
+                        <div class="original-content">
+                            <h4>原始内容：</h4>
+                            <p>{{ confession.original_content }}</p>
+                        </div>
+                    {% endif %}
+                    <div class="confession-meta">
+                        {{ confession.created_at }}
+                        {% if confession.ip_address %}
+                            <span style="margin-left: 1rem; font-size: 0.8rem; color: #666;">IP: {{ confession.ip_address }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="action-buttons">
+                        {% if confession.ip_address %}
+                            <button class="action-btn btn-secondary" onclick="showBanIPModal('{{ confession.ip_address }}')">
+                                封禁IP
+                            </button>
+                        {% endif %}
+                        {% if confession.status == 'pending' %}
+                            <!-- 审核操作 -->
+                            <form method="POST" action="/admin/manage/{{ confession.id }}" style="display: inline;">
+                                <input type="hidden" name="action" value="approve">
+                                <button type="submit" class="action-btn btn-primary">
+                                    审核通过
+                                </button>
+                            </form>
+                            <form method="POST" action="/admin/manage/{{ confession.id }}" style="display: inline;">
+                                <input type="hidden" name="action" value="reject">
+                                <button type="submit" class="action-btn btn-danger" onclick="return confirm('确定要拒绝这条表白吗？');">
+                                    拒绝
+                                </button>
+                            </form>
+                        {% else %}
+                            <!-- 常规操作 -->
+                            <form method="POST" action="/admin/manage/{{ confession.id }}" style="display: inline;">
+                                <input type="hidden" name="action" value="{% if confession.status == 'active' %}ban{% else %}unban{% endif %}">
+                                <button type="submit" class="action-btn {% if confession.status == 'active' %}btn-danger{% else %}btn-secondary{% endif %}">
+                                    {% if confession.status == 'active' %}封禁{% else %}解封{% endif %}
+                                </button>
+                            </form>
+                            {% if admin_role == 'main' %}
+                                <form method="POST" action="/admin/manage/{{ confession.id }}" style="display: inline;">
+                                    <input type="hidden" name="action" value="{% if confession.pinned %}unpin{% else %}pin{% endif %}">
+                                    <button type="submit" class="action-btn {% if confession.pinned %}btn-secondary{% else %}btn-primary{% endif %}">
+                                        {% if confession.pinned %}取消置顶{% else %}置顶{% endif %}
+                                    </button>
+                                </form>
+                                <form method="POST" action="/admin/manage/{{ confession.id }}" style="display: inline;">
+                                    <input type="hidden" name="action" value="delete">
+                                    <button type="submit" class="action-btn btn-danger" onclick="return confirm('确定要删除这条表白吗？');">
+                                        删除
+                                    </button>
+                                </form>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <h3>没有找到表白内容</h3>
+                <p>{% if search_query %}换个关键词试试？{% else %}还没有表白内容{% endif %}</p>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

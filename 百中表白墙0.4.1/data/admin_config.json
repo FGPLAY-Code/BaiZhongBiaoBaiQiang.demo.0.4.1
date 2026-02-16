@@ -1,0 +1,16 @@
+{
+  "admins": [
+    {
+      "username": "admin",
+      "password": "admin",
+      "role": "main",
+      "status": "active"
+    },
+    {
+      "username": "绝世奇才.钰",
+      "password": "LBDQYH99",
+      "role": "sub",
+      "status": "active"
+    }
+  ]
+}

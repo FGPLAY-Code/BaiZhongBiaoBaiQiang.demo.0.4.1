@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发表表白 - 百中表白墙</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
+            min-height: 100vh;
+        }
+        
+        /* 导航栏样式 */
+        .navbar {
+            background: linear-gradient(90deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(255, 154, 158, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .navbar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 2rem;
+        }
+        
+        .nav-links a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: #ff6b6b;
+        }
+        
+        /* 主内容区 */
+        .container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        /* 表白表单 */
+        .confess-form {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .form-group {
+            margin-bottom: 2rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        
+        .form-textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 1rem;
+            border: 2px solid #f5f5f5;
+            border-radius: 8px;
+            font-size: 1rem;
+            line-height: 1.5;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-textarea:focus {
+            outline: none;
+            border-color: #ff9a9e;
+            box-shadow: 0 0 0 3px rgba(255, 154, 158, 0.1);
+        }
+        
+        /* 按钮组 */
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+        
+        /* 按钮样式 */
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, #ff9a9e 0%, #fecfef 100%);
+            color: #333;
+            box-shadow: 0 4px 10px rgba(255, 154, 158, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 154, 158, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+            
+            .navbar-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .nav-links li {
+                margin: 0 1rem;
+            }
+            
+            .container {
+                margin: 1rem auto;
+            }
+            
+            .confess-form {
+                padding: 1.5rem;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/" class="logo">百中表白墙</a>
+            <ul class="nav-links">
+                <li><a href="/confess">表白</a></li>
+                {% if is_admin %}
+                <li class="font-selector">
+                    <button class="font-btn">字体</button>
+                    <div class="font-dropdown">
+                        <form method="POST" action="/admin/change-font">
+                            <input type="hidden" name="font" value="default">
+                            <button type="submit">默认字体</button>
+                        </form>
+                        <form method="POST" action="/admin/change-font">
+                            <input type="hidden" name="font" value="kaiti">
+                            <button type="submit">楷体</button>
+                        </form>
+                        <form method="POST" action="/admin/change-font">
+                            <input type="hidden" name="font" value="xkaiti">
+                            <button type="submit">行楷</button>
+                        </form>
+                        <form method="POST" action="/admin/change-font">
+                            <input type="hidden" name="font" value="stxingkai">
+                            <button type="submit">行书</button>
+                        </form>
+                    </div>
+                </li>
+                <li><a href="/admin">管理员后台</a></li>
+                <li><a href="/admin/logout">登出</a></li>
+                {% else %}
+                <li><a href="/admin/login">管理员</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+    
+    <style>
+        /* 字体选择器样式 */
+        .font-selector {
+            position: relative;
+        }
+        
+        .font-btn {
+            background: transparent;
+            border: none;
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 0;
+            transition: color 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .font-btn:hover {
+            color: #ff6b6b;
+        }
+        
+        .font-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 0.5rem 0;
+            margin-top: 0.5rem;
+            min-width: 120px;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+        
+        .font-selector:hover .font-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .font-dropdown form {
+            margin: 0;
+        }
+        
+        .font-dropdown button {
+            display: block;
+            width: 100%;
+            padding: 0.8rem 1.5rem;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+        }
+        
+        .font-dropdown button:hover {
+            background: rgba(255, 154, 158, 0.1);
+            padding-left: 2rem;
+        }
+        
+        /* 字体样式定义 */
+        body.font-kaiti {
+            font-family: 'KaiTi', '楷体', serif;
+        }
+        
+        body.font-xkaiti {
+            font-family: 'STKaiti', '华文楷体', serif;
+        }
+        
+        body.font-stxingkai {
+            font-family: 'STXingkai', '华文行楷', cursive;
+        }
+    </style>
+    
+    <script>
+        // 应用服务器传递的字体
+        document.addEventListener('DOMContentLoaded', function() {
+            // 从模板变量获取字体配置
+            const currentFont = '{{ current_font }}';
+            if (currentFont && currentFont !== 'default') {
+                document.body.className = 'font-' + currentFont;
+            }
+            
+            // 检查是否有敏感词
+            const hasSensitive = {{ has_sensitive|tojson }};
+            if (hasSensitive) {
+                showSensitiveWarning();
+            }
+            
+            // 检查是否需要审核
+            const hasPending = {{ has_pending|tojson }};
+            if (hasPending) {
+                showPendingWarning();
+            }
+        });
+        
+        // 显示敏感词警告弹窗
+        function showSensitiveWarning() {
+            // 创建弹窗元素
+            const modal = document.createElement('div');
+            modal.className = 'sensitive-modal';
+            modal.innerHTML = `
+                <div class="sensitive-modal-content">
+                    <div class="sensitive-modal-header">
+                        <h3>敏感词提示</h3>
+                    </div>
+                    <div class="sensitive-modal-body">
+                        <p>您的表白内容中包含严重敏感词，请修改后再发布。</p>
+                    </div>
+                    <div class="sensitive-modal-footer">
+                        <button class="btn btn-primary" onclick="this.closest('.sensitive-modal').remove()">我知道了</button>
+                    </div>
+                </div>
+            `;
+            
+            // 添加到页面
+            document.body.appendChild(modal);
+            
+            // 添加弹窗样式
+            addModalStyles();
+        }
+        
+        // 显示需要审核警告弹窗
+        function showPendingWarning() {
+            // 创建弹窗元素
+            const modal = document.createElement('div');
+            modal.className = 'sensitive-modal';
+            modal.innerHTML = `
+                <div class="sensitive-modal-content">
+                    <div class="sensitive-modal-header">
+                        <h3>审核提示</h3>
+                    </div>
+                    <div class="sensitive-modal-body">
+                        <p>您的表白内容已提交，需要管理员审核后才能显示。</p>
+                    </div>
+                    <div class="sensitive-modal-footer">
+                        <button class="btn btn-primary" onclick="window.location.href='/';">返回首页</button>
+                    </div>
+                </div>
+            `;
+            
+            // 添加到页面
+            document.body.appendChild(modal);
+            
+            // 添加弹窗样式
+            addModalStyles();
+        }
+        
+        // 添加弹窗样式
+        function addModalStyles() {
+            // 检查是否已添加样式
+            if (!document.getElementById('modal-styles')) {
+                const style = document.createElement('style');
+                style.id = 'modal-styles';
+                style.textContent = `
+                    /* 敏感词弹窗样式 */
+                    .sensitive-modal {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: rgba(0, 0, 0, 0.5);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        z-index: 10000;
+                    }
+                    
+                    .sensitive-modal-content {
+                        background: white;
+                        border-radius: 16px;
+                        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+                        max-width: 400px;
+                        width: 90%;
+                        overflow: hidden;
+                        animation: modalFadeIn 0.3s ease;
+                    }
+                    
+                    @keyframes modalFadeIn {
+                        from {
+                            opacity: 0;
+                            transform: translateY(-20px) scale(0.95);
+                        }
+                        to {
+                            opacity: 1;
+                            transform: translateY(0) scale(1);
+                        }
+                    }
+                    
+                    .sensitive-modal-header {
+                        background: linear-gradient(90deg, #ff9a9e 0%, #fecfef 100%);
+                        padding: 1.5rem;
+                        text-align: center;
+                    }
+                    
+                    .sensitive-modal-header h3 {
+                        margin: 0;
+                        color: #333;
+                        font-size: 1.2rem;
+                        font-weight: bold;
+                    }
+                    
+                    .sensitive-modal-body {
+                        padding: 2rem;
+                        text-align: center;
+                    }
+                    
+                    .sensitive-modal-body p {
+                        margin: 0;
+                        color: #333;
+                        font-size: 1rem;
+                        line-height: 1.5;
+                    }
+                    
+                    .sensitive-modal-footer {
+                        padding: 0 2rem 2rem;
+                        text-align: center;
+                    }
+                    
+                    .sensitive-modal-footer .btn {
+                        min-width: 120px;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+    </script>
+    
+    <!-- 主内容区 -->
+    <div class="container">
+        <form class="confess-form" method="POST" action="/confess">
+            <div class="form-group">
+                <label for="content" class="form-label">表白内容</label>
+                <textarea id="content" name="content" class="form-textarea" placeholder="在这里写下你的表白..."></textarea>
+            </div>
+            <div class="btn-group">
+                <a href="/" class="btn btn-secondary">取消</a>
+                <button type="submit" class="btn btn-primary">发表</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>访问被拒绝 - 百中表白墙</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            text-align: center;
+            background: white;
+            border-radius: 16px;
+            padding: 3rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .error-code {
+            font-size: 4rem;
+            font-weight: bold;
+            background: linear-gradient(90deg, #ff9a9e 0%, #fecfef 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+        
+        .error-message {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, #ff9a9e 0%, #fecfef 100%);
+            color: #333;
+            box-shadow: 0 4px 10px rgba(255, 154, 158, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 154, 158, 0.4);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 2rem;
+            }
+            
+            .error-code {
+                font-size: 3rem;
+            }
+            
+            .error-message {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="error-code">403</div>
+        <div class="error-message">
+            <p>您的账号因多次发布违规内容已被暂时封禁</p>
+            <p>请稍后再试，或通过以下表单提交申诉</p>
+            {% if appeal_error %}
+            <p style="color: #ff6b6b; margin-top: 1rem;">{{ appeal_error }}</p>
+            {% endif %}
+        </div>
+        <form class="appeal-form" method="POST" action="/appeal">
+            <div style="margin: 2rem 0;">
+                <textarea name="appeal_content" placeholder="请输入您的申诉内容..." style="width: 100%; min-height: 150px; padding: 1rem; border: 2px solid #f5f5f5; border-radius: 25px; font-size: 1rem; resize: vertical;"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">账号申诉</button>
+        </form>
+    </div>
+</body>
+</html>
